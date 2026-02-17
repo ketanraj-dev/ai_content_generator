@@ -1,0 +1,9 @@
+langchain
+langgraph
+openai
+youtube-transcript-api
+tiktoken
+python-dotenv
+requests
+pydantic
+langchain_openai

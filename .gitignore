@@ -1,0 +1,6 @@
+.env
+__pycache__/
+yv_to_blog/
+*.pyc
+exchange_token.py
+get_urn.py

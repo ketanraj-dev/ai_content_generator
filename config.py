@@ -1,0 +1,13 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+LINKEDIN_ACCESS_TOKEN = os.getenv("LINKEDIN_ACCESS_TOKEN")
+LINKEDIN_PERSON_URN = os.getenv("LINKEDIN_PERSON_URN")
+
+MODEL_NAME = "gpt-4.1-mini"
+TOKEN_THRESHOLD = 8000
+CHUNK_SIZE = 2000
+LINKEDIN_CHAR_LIMIT = 2900
