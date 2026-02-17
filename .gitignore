@@ -1,6 +1,111 @@
-.env
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyo
+*.pyd
+.Python
+
+# Virtual Environment
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
 yv_to_blog/
-*.pyc
-exchange_token.py
-get_urn.py
+pyvenv.cfg
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+.env.production
+config.ini
+secrets.json
+*.key
+*.pem
+
+# API Keys and tokens
+*api_key*
+*secret*
+*token*
+.secrets/
+credentials.json
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# IDEs
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Test cache
+.pytest_cache/
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Build folders
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# FastAPI specific
+*.pid
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Package files
+*.zip
+*.tar.gz
+*.tgz
+*.tar.bz2
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+temp/
+
+# Node modules (in case of frontend)
+node_modules/
+
+# AI model files (often large)
+*.model
+*.pkl
+*.joblib
+models/
+checkpoints/
