@@ -26,8 +26,11 @@ def linkedin_login(current_user: User = Depends(get_current_user)):
     return RedirectResponse(linkedin_url)
 
 @router.get("/callback")
-def linkedin_callback(code: str, state: str, db: Session = Depends(get_db)):
-
+def linkedin_callback(
+    code: str,
+    state: str,
+    db: Session = Depends(get_db)
+):
     token_url = "https://www.linkedin.com/oauth/v2/accessToken"
 
     data = {
