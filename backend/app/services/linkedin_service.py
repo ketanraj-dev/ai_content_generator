@@ -2,11 +2,11 @@ import requests
 from app.core.config import settings
 
 
-def publish_post(content: str):
+def publish_post(content: str, access_token: str):
     url = "https://api.linkedin.com/v2/ugcPosts"
 
     headers = {
-        "Authorization": f"Bearer {settings.LINKEDIN_ACCESS_TOKEN}",
+        "Authorization": f"Bearer {access_token}",
         "X-Restli-Protocol-Version": "2.0.0",
         "Content-Type": "application/json",
     }

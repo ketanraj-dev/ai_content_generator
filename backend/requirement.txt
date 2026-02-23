@@ -6,3 +6,8 @@ requests
 youtube-transcript-api
 openai
 tiktoken
+sqlalchemy
+psycopg2-binary
+passlib[bcrypt]
+python-jose
+python-multipart
