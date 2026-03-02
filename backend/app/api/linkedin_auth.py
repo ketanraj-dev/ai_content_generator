@@ -8,6 +8,7 @@ import requests
 from datetime import datetime, timedelta
 from app.db.database import get_db
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 router = APIRouter(prefix="/auth/linkedin", tags=["linkedin"])
 
@@ -63,8 +64,14 @@ def linkedin_callback(
 
     return {"message": "LinkedIn connected successfully"}
 
+
 @router.get("/status")
 def linkedin_status(current_user: User = Depends(get_current_user)):
-    if current_user.linkedin_access_token:
+    if (
+        current_user.linkedin_access_token
+        and current_user.linkedin_expires_at
+        and current_user.linkedin_expires_at > datetime.utcnow()
+    ):
         return {"connected": True}
+
     return {"connected": False}

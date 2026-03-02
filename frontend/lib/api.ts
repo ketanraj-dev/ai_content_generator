@@ -86,7 +86,7 @@ export async function publishPost(id: number) {
 
 // 🔗 LinkedIn Status
 export async function getLinkedInStatus() {
-  const res = await fetch(`${API_URL}/status`, {
+  const res = await fetch(`${API_URL}/auth/linkedin/status`, {
     credentials: "include",
   });
 
