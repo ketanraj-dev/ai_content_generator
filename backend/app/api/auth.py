@@ -37,9 +37,13 @@ def register(data: UserRegister):
 
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends
+from fastapi import Response
 
-@router.post("/login", response_model=TokenResponse)
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
+@router.post("/login")
+def login(
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends()
+):
     db = SessionLocal()
 
     user = db.query(User).filter(User.email == form_data.username).first()
@@ -49,6 +53,21 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     token = create_access_token({"sub": str(user.id)})
+
+    # 🔥 Set HttpOnly Cookie
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=False,  # True in production with HTTPS
+        samesite="lax"
+    )
+
     db.close()
 
-    return {"access_token": token}
+    return {"message": "Login successful"}
+
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie("access_token")
+    return {"message": "Logged out"}

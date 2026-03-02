@@ -102,3 +102,4 @@ async def publish(data: PublishRequest,current_user: User = Depends(get_current_
 async def get_posts(current_user: User = Depends(get_current_user),db: Session = Depends(get_db),):
     posts = db.query(Post).filter(Post.user_id == current_user.id).all()
     return posts
+

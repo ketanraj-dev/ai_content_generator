@@ -12,11 +12,10 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const data = await loginUser(email, password);
-      localStorage.setItem("token", data.access_token);
+      await loginUser(email, password);
       router.push("/dashboard");
-    } catch (err) {
-      alert("Login failed");
+    } catch (err: any) {
+      alert(err.message || "Login failed");
     }
   }
 
@@ -38,7 +37,9 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className="bg-black text-white p-2">Login</button>
+        <button className="bg-black text-white p-2">
+          Login
+        </button>
       </form>
     </div>
   );

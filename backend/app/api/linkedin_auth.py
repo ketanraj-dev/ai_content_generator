@@ -62,3 +62,9 @@ def linkedin_callback(
     db.commit()
 
     return {"message": "LinkedIn connected successfully"}
+
+@router.get("/status")
+def linkedin_status(current_user: User = Depends(get_current_user)):
+    if current_user.linkedin_access_token:
+        return {"connected": True}
+    return {"connected": False}
