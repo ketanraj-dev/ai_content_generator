@@ -70,31 +70,43 @@ async def update_draft(
 
 # 🔥 Publish Post
 @router.post("/publish")
-async def publish(data: PublishRequest,current_user: User = Depends(get_current_user),db: Session = Depends(get_db),):
+async def publish(
+    data: PublishRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    post = db.query(Post).filter(
+        Post.id == data.id,
+        Post.user_id == current_user.id,
+    ).first()
+
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    if not current_user.linkedin_access_token:
+        raise HTTPException(
+            status_code=400,
+            detail="LinkedIn not connected"
+        )
+
     try:
-        post = db.query(Post).filter(
-            Post.id == data.id,
-            Post.user_id == current_user.id,
-        ).first()
-
-        if not post:
-            raise HTTPException(status_code=404, detail="Post not found")
-
-        if not current_user.linkedin_access_token:
-            raise HTTPException(
-                status_code=400,
-                detail="LinkedIn not connected"
-            )
-
         publish_post(post.draft, current_user.linkedin_access_token)
 
-        post.published = True
+    except Exception:
+        # 🔥 If LinkedIn fails (revoked / expired token)
+        current_user.linkedin_access_token = None
+        current_user.linkedin_expires_at = None
         db.commit()
 
-        return {"status": "published"}
+        raise HTTPException(
+            status_code=400,
+            detail="LinkedIn session expired. Please reconnect."
+        )
 
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    post.published = True
+    db.commit()
+
+    return {"status": "published"}
 
 
 # 🔥 Get All User Posts

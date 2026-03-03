@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from app.db.database import get_db
 from sqlalchemy.orm import Session
 from datetime import datetime
+from fastapi.responses import RedirectResponse
 
 router = APIRouter(prefix="/auth/linkedin", tags=["linkedin"])
 
@@ -62,7 +63,7 @@ def linkedin_callback(
 
     db.commit()
 
-    return {"message": "LinkedIn connected successfully"}
+    return RedirectResponse(url="http://localhost:3000/dashboard", status_code=302)
 
 
 @router.get("/status")

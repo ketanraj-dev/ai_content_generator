@@ -64,6 +64,14 @@ export default function Dashboard() {
       setError("");
       alert("Post published successfully!");
     } catch (err: any) {
+      setError(err.message);
+
+      // If Linkedin expired → refresh status
+      if (err.message.includes("LinkedIn session expired")) {
+        const status = await getLinkedInStatus();
+        setLinkedinConnected(status.connected);
+      }
+      
       if (err.message.includes("Not authenticated")) {
         router.push("/login");
       } else {
