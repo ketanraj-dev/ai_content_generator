@@ -2,7 +2,7 @@ import requests
 from app.core.config import settings
 
 
-def publish_post(content: str, access_token: str):
+def publish_post(content: str, access_token: str, person_urn: str):
     url = "https://api.linkedin.com/v2/ugcPosts"
 
     headers = {
@@ -12,7 +12,7 @@ def publish_post(content: str, access_token: str):
     }
 
     payload = {
-        "author": settings.LINKEDIN_PERSON_URN,
+        "author": person_urn,
         "lifecycleState": "PUBLISHED",
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {

@@ -23,6 +23,7 @@ def linkedin_login(current_user: User = Depends(get_current_user)):
         f"&redirect_uri={settings.LINKEDIN_REDIRECT_URI}"
         f"&scope=w_member_social openid profile email"
         f"&state={current_user.id}"
+        f"&prompt=login"
     )
 
     return RedirectResponse(linkedin_url)
@@ -60,6 +61,19 @@ def linkedin_callback(
 
     user.linkedin_access_token = access_token
     user.linkedin_expires_at = datetime.utcnow() + timedelta(seconds=expires_in)
+
+    # Fetch the user's LinkedIn URN so we publish as THEIR profile
+    try:
+        userinfo_resp = requests.get(
+            "https://api.linkedin.com/v2/userinfo",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        if userinfo_resp.status_code == 200:
+            sub = userinfo_resp.json().get("sub")
+            if sub:
+                user.linkedin_urn = f"urn:li:person:{sub}"
+    except Exception:
+        pass  # URN fetch failed — will fall back to settings
 
     db.commit()
 

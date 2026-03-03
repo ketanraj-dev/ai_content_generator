@@ -14,6 +14,7 @@ class User(Base):
 
     linkedin_access_token = Column(String, nullable=True)
     linkedin_expires_at = Column(DateTime, nullable=True)
+    linkedin_urn = Column(String, nullable=True)
 
     # Preferences
     pref_tone = Column(String, default="professional")

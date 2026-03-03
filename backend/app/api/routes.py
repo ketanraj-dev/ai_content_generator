@@ -15,6 +15,7 @@ from app.services.linkedin_service import publish_post
 from app.db.database import get_db
 from app.db.models import Post
 from app.db.user_models import User
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -94,8 +95,11 @@ async def publish(
             detail="LinkedIn not connected"
         )
 
+    # Resolve the person URN for this user
+    person_urn = current_user.linkedin_urn or settings.LINKEDIN_PERSON_URN
+
     try:
-        publish_post(post.draft, current_user.linkedin_access_token)
+        publish_post(post.draft, current_user.linkedin_access_token, person_urn)
 
     except Exception:
         # 🔥 If LinkedIn fails (revoked / expired token)
