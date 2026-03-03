@@ -108,3 +108,69 @@ export async function logoutUser() {
 
   return res.json();
 }
+
+// ─── User Profile ───
+
+export async function getUserProfile() {
+  const res = await fetch(`${API_URL}/user/me`, {
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to fetch profile");
+  return data;
+}
+
+// ─── User Preferences ───
+
+export async function getUserPreferences() {
+  const res = await fetch(`${API_URL}/user/preferences`, {
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to fetch preferences");
+  return data;
+}
+
+export async function updateUserPreferences(prefs: {
+  tone?: string;
+  post_length?: string;
+  hashtags?: string;
+}) {
+  const res = await fetch(`${API_URL}/user/preferences`, {
+    method: "PUT",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(prefs),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to update preferences");
+  return data;
+}
+
+// ─── User Posts (from DB) ───
+
+export async function getUserPosts() {
+  const res = await fetch(`${API_URL}/posts`, {
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to fetch posts");
+  return data;
+}
+
+// ─── Delete Account ───
+
+export async function deleteAccount() {
+  const res = await fetch(`${API_URL}/user/account`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to delete account");
+  return data;
+}

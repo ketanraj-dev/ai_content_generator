@@ -62,14 +62,14 @@ export default function HistoryPanel({ posts, onSelect }: HistoryPanelProps) {
                 {post.draft.length > 120 ? '...' : ''}
               </p>
               <Badge
-                variant={post.status === 'published' ? 'success' : 'neutral'}
+                variant={post.published ? 'success' : 'neutral'}
                 className="shrink-0"
               >
-                {post.status === 'published' ? 'Published' : 'Draft'}
+                {post.published ? 'Published' : 'Draft'}
               </Badge>
             </div>
             <p className="text-xs text-gray-400 mt-1.5">
-              {new Date(post.createdAt).toLocaleDateString('en-US', {
+              {new Date(post.created_at).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 hour: '2-digit',

@@ -1,8 +1,13 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { generatePost, publishPost, getLinkedInStatus } from '@/lib/api';
+import {
+  generatePost,
+  publishPost,
+  getLinkedInStatus,
+  getUserPosts,
+} from '@/lib/api';
 import { useToast } from '@/components/ui/ToastProvider';
 import GeneratePanel from '@/components/dashboard/GeneratePanel';
 import DraftEditor from '@/components/dashboard/DraftEditor';
@@ -22,40 +27,32 @@ export default function Dashboard() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Load history from localStorage
+  // Check authentication + LinkedIn status + load posts from DB
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('content_history');
-      if (stored) setPosts(JSON.parse(stored));
-    } catch {
-      /* empty */
-    }
-  }, []);
-
-  const saveHistory = useCallback(
-    (updatedPosts: Post[]) => {
-      setPosts(updatedPosts);
-      localStorage.setItem(
-        'content_history',
-        JSON.stringify(updatedPosts.slice(0, 50))
-      );
-    },
-    []
-  );
-
-  // Check authentication + LinkedIn status
-  useEffect(() => {
-    async function checkStatus() {
+    async function init() {
       try {
-        const data = await getLinkedInStatus();
-        setLinkedinConnected(data.connected);
+        const [statusData, postsData] = await Promise.all([
+          getLinkedInStatus(),
+          getUserPosts(),
+        ]);
+        setLinkedinConnected(statusData.connected);
+        setPosts(postsData);
         setAuthChecked(true);
       } catch {
         router.push('/login');
       }
     }
-    checkStatus();
+    init();
   }, [router]);
+
+  async function refreshPosts() {
+    try {
+      const data = await getUserPosts();
+      setPosts(data);
+    } catch {
+      /* silent */
+    }
+  }
 
   async function handleGenerate(youtubeUrl: string) {
     try {
@@ -65,16 +62,7 @@ export default function Dashboard() {
       setDraft(data.draft);
       setPostId(data.id);
       showToast('success', 'Post generated successfully!');
-
-      // Add to history
-      const newPost: Post = {
-        id: data.id,
-        youtubeUrl,
-        draft: data.draft,
-        status: 'draft',
-        createdAt: new Date().toISOString(),
-      };
-      saveHistory([newPost, ...posts]);
+      await refreshPosts();
     } catch (err: any) {
       if (err.message.includes('Not authenticated')) {
         router.push('/login');
@@ -98,17 +86,11 @@ export default function Dashboard() {
       await publishPost(postId);
       setError('');
       showToast('success', 'Post published to LinkedIn!');
-
-      // Update history
-      const updated = posts.map((p) =>
-        p.id === postId ? { ...p, status: 'published' as const } : p
-      );
-      saveHistory(updated);
+      await refreshPosts();
     } catch (err: any) {
       setError(err.message);
       showToast('error', err.message);
 
-      // If LinkedIn expired → refresh status
       if (err.message.includes('LinkedIn session expired')) {
         const status = await getLinkedInStatus();
         setLinkedinConnected(status.connected);

@@ -28,7 +28,12 @@ async def generate(
 ):
     try:
         transcript = get_transcript(data.youtube_url)
-        post_text = generate_post(transcript)
+        post_text = generate_post(
+            transcript,
+            tone=current_user.pref_tone or "professional",
+            post_length=current_user.pref_post_length or "medium",
+            hashtags=current_user.pref_hashtags or "",
+        )
 
         new_post = Post(
             youtube_url=data.youtube_url,

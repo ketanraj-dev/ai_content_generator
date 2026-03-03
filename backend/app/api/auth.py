@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, Response
+from fastapi.security import OAuth2PasswordRequestForm
 from app.db.database import SessionLocal
 from app.db.user_models import User
 from app.core.security import hash_password, verify_password, create_access_token
@@ -8,14 +9,13 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register")
-def register(data: UserRegister):
+def register(data: UserRegister, response: Response):
     db = SessionLocal()
 
     existing_user = db.query(User).filter(User.email == data.email).first()
     if existing_user:
         db.close()
         raise HTTPException(status_code=400, detail="Email already registered")
-    print("Password length:", len(data.password.encode("utf-8")))
 
     try:
         hashed = hash_password(data.password)
@@ -31,13 +31,20 @@ def register(data: UserRegister):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    # Auto-login: set auth cookie immediately
+    token = create_access_token({"sub": str(new_user.id)})
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=False,
+        samesite="lax"
+    )
+
     db.close()
     return {"message": "User created"}
 
-
-from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import Depends
-from fastapi import Response
 
 @router.post("/login")
 def login(
