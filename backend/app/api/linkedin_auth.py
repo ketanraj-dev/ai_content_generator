@@ -77,7 +77,7 @@ def linkedin_callback(
 
     db.commit()
 
-    return RedirectResponse(url="http://localhost:3000/dashboard", status_code=302)
+    return RedirectResponse(url=f"{settings.FRONTEND_URL}/dashboard", status_code=302)
 
 
 @router.get("/status")

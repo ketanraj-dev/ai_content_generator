@@ -15,6 +15,11 @@ class Settings:
     LINKEDIN_CLIENT_SECRET: str = os.getenv("LINKEDIN_CLIENT_SECRET")
     LINKEDIN_REDIRECT_URI: str = os.getenv("LINKEDIN_REDIRECT_URI")
 
+    # Deployment
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
+    ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+
 
 
 settings = Settings()

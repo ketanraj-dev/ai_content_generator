@@ -4,8 +4,21 @@ from app.db.database import SessionLocal
 from app.db.user_models import User
 from app.core.security import hash_password, verify_password, create_access_token
 from app.models.schemas import UserRegister, UserLogin, TokenResponse
+from app.core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+_is_prod = settings.ENVIRONMENT == "production"
+
+def _set_auth_cookie(response: Response, token: str):
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=_is_prod,
+        samesite="none" if _is_prod else "lax",
+        max_age=60 * 60,  # 1 hour
+    )
 
 
 @router.post("/register")
@@ -34,13 +47,7 @@ def register(data: UserRegister, response: Response):
 
     # Auto-login: set auth cookie immediately
     token = create_access_token({"sub": str(new_user.id)})
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True,
-        secure=False,
-        samesite="lax"
-    )
+    _set_auth_cookie(response, token)
 
     db.close()
     return {"message": "User created"}
@@ -61,14 +68,8 @@ def login(
 
     token = create_access_token({"sub": str(user.id)})
 
-    # 🔥 Set HttpOnly Cookie
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True,
-        secure=False,  # True in production with HTTPS
-        samesite="lax"
-    )
+    # Set HttpOnly Cookie
+    _set_auth_cookie(response, token)
 
     db.close()
 

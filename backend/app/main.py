@@ -12,9 +12,11 @@ app = FastAPI(title="YouTube to LinkedIn SaaS")
 
 Base.metadata.create_all(bind=engine)
 
+from app.core.config import settings as app_settings
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[o.strip() for o in app_settings.ALLOWED_ORIGINS.split(",")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

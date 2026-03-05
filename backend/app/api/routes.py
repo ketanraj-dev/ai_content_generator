@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
+from datetime import datetime, timedelta
+
 from app.core.dependencies import get_current_user
 from app.models.schemas import (
     GenerateRequest,
@@ -17,6 +19,8 @@ from app.db.models import Post
 from app.db.user_models import User
 from app.core.config import settings
 
+PLAN_LIMITS = {"free": 3, "pro": 999999}
+
 router = APIRouter()
 
 
@@ -27,6 +31,21 @@ async def generate(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    # ─── Enforce plan usage limits ───
+    plan = current_user.plan or "free"
+    limit = PLAN_LIMITS.get(plan, 3)
+    month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    posts_this_month = (
+        db.query(Post)
+        .filter(Post.user_id == current_user.id, Post.created_at >= month_start)
+        .count()
+    )
+    if posts_this_month >= limit:
+        raise HTTPException(
+            status_code=402,
+            detail=f"You've reached your {plan} plan limit of {limit} posts this month. Upgrade to Pro for unlimited posts.",
+        )
+
     try:
         transcript = get_transcript(data.youtube_url)
         post_text = generate_post(
