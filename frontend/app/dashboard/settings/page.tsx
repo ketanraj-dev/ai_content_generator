@@ -112,7 +112,7 @@ export default function SettingsPage() {
   }
 
   function handleConnectLinkedin() {
-    window.location.href = 'http://localhost:8000/auth/linkedin/login';
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/linkedin/login`;
   }
 
   if (loading) {

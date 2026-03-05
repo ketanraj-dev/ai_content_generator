@@ -9,7 +9,7 @@ interface LinkedInStatusProps {
 
 export default function LinkedInStatus({ connected }: LinkedInStatusProps) {
   function handleConnect() {
-    window.location.href = 'http://localhost:8000/auth/linkedin/login';
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/auth/linkedin/login`;
   }
 
   return (
