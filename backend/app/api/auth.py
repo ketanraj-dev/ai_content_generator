@@ -30,11 +30,7 @@ def register(data: UserRegister, response: Response):
         db.close()
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    try:
-        hashed = hash_password(data.password)
-    except ValueError as e:
-        db.close()
-        raise HTTPException(status_code=400, detail=str(e))
+    hashed = hash_password(data.password)
 
     new_user = User(
         email=data.email,
